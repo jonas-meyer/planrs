@@ -1,6 +1,7 @@
 pub mod node;
 pub mod road;
 pub mod segment;
+pub mod slotmap;
 
 use eframe::egui;
 use glam::Vec2;
