@@ -38,11 +38,13 @@ impl<T> Key<T> {
     }
 }
 
+#[derive(Debug)]
 struct Slot<T> {
     generation: u32,
     val: Option<T>,
 }
 
+#[derive(Debug)]
 pub struct SlotMap<T> {
     slots: Vec<Slot<T>>,
     free: Vec<u32>,
@@ -93,7 +95,7 @@ impl<T> SlotMap<T> {
         }
         let val = slot.val.take()?;
         slot.generation = slot.generation.wrapping_add(1);
-        self.free.push(key.index as u32);
+        self.free.push(key.index);
         self.len -= 1;
         Some(val)
     }
@@ -111,5 +113,15 @@ impl<T> SlotMap<T> {
     pub fn get_mut(&mut self, key: Key<T>) -> Option<&mut T> {
         let i = self.valid_index(key)?;
         self.slots[i].val.as_mut()
+    }
+    pub fn iter(&self) -> impl Iterator<Item = (Key<T>, &T)> {
+        self.slots.iter().enumerate().filter_map(|(idx, slot)| {
+            slot.val
+                .as_ref()
+                .map(|value| (Key::from_parts(idx as u32, slot.generation), value))
+        })
+    }
+    pub fn values(&self) -> impl Iterator<Item = &T> {
+        self.iter().map(|(_, value)| value)
     }
 }

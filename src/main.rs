@@ -1,12 +1,14 @@
+pub mod draw;
 pub mod node;
 pub mod road;
 pub mod segment;
 pub mod slotmap;
+pub mod world;
 
 use eframe::egui;
 use glam::Vec2;
 
-use crate::{node::Node, road::Road};
+use crate::{draw::DrawCtx, road::RoadExt, segment::SegmentExt, world::World};
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions::default();
     eframe::run_native(
@@ -17,19 +19,28 @@ fn main() -> eframe::Result<()> {
 }
 
 struct MyApp {
-    roads: Vec<Road>,
+    world: World,
 }
 
 impl Default for MyApp {
     fn default() -> Self {
-        let start_node = Node::new(1, Vec2::new(100.0, 100.0));
-        let end_node = Node::new(2, Vec2::new(300.0, 300.0));
-        let segment = segment::Segment::new(1, start_node, end_node);
-        let mut segments = Vec::new();
-        segments.push(segment);
-        let mut roads = Vec::new();
-        roads.push(Road::new(1, "Main St".to_string(), segments));
-        Self { roads }
+        let mut world = World {
+            nodes: slotmap::SlotMap::new(),
+            segments: slotmap::SlotMap::new(),
+            roads: slotmap::SlotMap::new(),
+        };
+        let road = world.add_road("Main Street");
+        world.add_segment(
+            Some(road),
+            node::Endpoint::Pos(Vec2::new(100.0, 100.0)),
+            node::Endpoint::Pos(Vec2::new(300.0, 300.0)),
+        );
+        world.add_segment(
+            Some(road),
+            node::Endpoint::Pos(Vec2::new(300.0, 300.0)),
+            node::Endpoint::Pos(Vec2::new(500.0, 100.0)),
+        );
+        Self { world }
     }
 }
 
@@ -46,9 +57,10 @@ impl eframe::App for MyApp {
             let to_screen =
                 |world_pos: Vec2| -> egui::Pos2 { egui::pos2(world_pos.x, world_pos.y) };
 
-            for road in &self.roads {
-                road.draw(&painter, &to_screen);
-            }
+            self.world.draw(&DrawCtx {
+                painter: &painter,
+                to_screen,
+            });
         });
     }
 }
