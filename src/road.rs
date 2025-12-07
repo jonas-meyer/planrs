@@ -86,7 +86,7 @@ impl CurrentRoad {
 }
 
 fn setup_input_context(mut commands: Commands) {
-    let config: RoadInputConfig = load_config("settings.ron");
+    let config: RoadInputConfig = load_config("settings/settings.ron");
 
     commands.spawn((
         RoadBuilder,

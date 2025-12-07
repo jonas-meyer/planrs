@@ -1,0 +1,6 @@
+(
+    toggle_build: Key(KeyR),
+    place_node: Mouse(Left),
+    confirm_road: Key(Enter),
+    cancel_building: Key(Escape),
+)
