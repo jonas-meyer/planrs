@@ -1,11 +1,11 @@
+[workspace]
+members = ["bevy_author", "bevy_author_macros"]
+
 [package]
 name = "planrs"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = { version = "0.17", features = ["serialize"] }
-bevy_enhanced_input = "0.20"
-fastrand = "2.3.0"
-ron = "0.12.0"
-serde = "1.0.228"
+bevy = "0.18"
+bevy_author = { path = "bevy_author" }
